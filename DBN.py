@@ -187,26 +187,6 @@ class DBN(object):
 def test_DBN(finetune_lr=0.1, pretraining_epochs=100,
              pretrain_lr=0.01, k=1, training_epochs=1000,
              dataset='mnist.pkl.gz', batch_size=10):
-    """
-    Demonstrates how to train and test a Deep Belief Network.
-
-    This is demonstrated on MNIST.
-
-    :type finetune_lr: float
-    :param finetune_lr: learning rate used in the finetune stage
-    :type pretraining_epochs: int
-    :param pretraining_epochs: number of epoch to do pretraining
-    :type pretrain_lr: float
-    :param pretrain_lr: learning rate to be used during pre-training
-    :type k: int
-    :param k: number of Gibbs steps in CD/PCD
-    :type training_epochs: int
-    :param training_epochs: maximal number of iterations ot run the optimizer
-    :type dataset: string
-    :param dataset: path the the pickled dataset
-    :type batch_size: int
-    :param batch_size: the size of a minibatch
-    """
 
     datasets = load_data(dataset)
 

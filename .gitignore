@@ -1,2 +1,4 @@
 .idea
 .ropeproject
+*.pkl.gz
+*.pyc
