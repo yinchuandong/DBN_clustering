@@ -22,9 +22,7 @@ def randCenter(dataMat, k):
 
 
 class KMeans(object):
-    def __init__(self, X, C):
-        self.X = X
-        self.C = C
+    def __init__(self):
         return
 
     def cluster(self, dataMat, k, distMeas=distEclud, createCenter=randCenter):
@@ -86,8 +84,8 @@ class KMeans(object):
             labelMat[np.nonzero(labelMat[:, 0].A == bestCentToSplit)[0], :] = bestClustAss
         return np.mat(centList), labelMat
 
-    def cost(self):
-        R = T.sqrt(T.sum(T.pow(self.X - self.C, 2)))
+    def cost(self, X, C):
+        R = T.sqrt(T.sum(T.pow(X - C, 2)))
         return R
 
 
@@ -106,9 +104,8 @@ if __name__ == '__main__':
 
     X = T.matrix('X')
     C = T.matrix('C')
-    index = T.lscalar('index')
 
-    km = KMeans(X, C)
+    km = KMeans()
     centerMat, labelMat = km.bisCluster(dataMat, 3)
 
     # print centerMat
@@ -116,20 +113,22 @@ if __name__ == '__main__':
     # sys.exit()
 
     label = np.asarray(labelMat[:, 0].astype(int).T)[0]
-    CMat = theano.shared(np.asarray(centerMat[label], dtype=theano.config.floatX
-                                    ), borrow=True)
-    XMat = theano.shared(np.asarray(dataMat, dtype=theano.config.floatX), borrow=True)
-    cost = km.cost()
+    CMat = centerMat[label][0:4]
+    XMat = dataMat[0:4]
+    # CMat = theano.shared(np.asarray(centerMat[label], dtype=theano.config.floatX
+    #                                 ), borrow=True)
+    # XMat = theano.shared(np.asarray(dataMat, dtype=theano.config.floatX), borrow=True)
+    cost = km.cost(X, C)
     fn = theano.function(
-        inputs=[index],
+        inputs=[X, C],
         outputs=cost,
-        givens={
-            X: XMat[index:4],
-            C: CMat[index:4]
-        }
+        # givens={
+        #     X: XMat[0:4],
+        #     C: CMat[0:4]
+        # }
     )
 
-    result = fn(0)
+    result = fn(XMat, CMat)
     print result
 
     X = dataMat[0: 4]

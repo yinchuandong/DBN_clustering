@@ -8,6 +8,7 @@ import theano
 import theano.tensor as T
 from theano.tensor.shared_randomstreams import RandomStreams
 
+from KMeans_layer import KMeans
 from logistic_sgd import LogisticRegression, load_data
 from hidden_layer import HiddenLayer
 from rbm import RBM
@@ -67,15 +68,24 @@ class DBN(object):
             self.rbm_layers.append(rbm_layer)
 
         # We now need to add a logistic layer on top of the MLP
-        self.logLayer = LogisticRegression(
-            input=self.sigmoid_layers[-1].output,
-            n_in=hidden_layers_sizes[-1],
-            n_out=n_outs)
-        self.params.extend(self.logLayer.params)
+        # self.logLayer = LogisticRegression(
+        #     input=self.sigmoid_layers[-1].output,
+        #     n_in=hidden_layers_sizes[-1],
+        #     n_out=n_outs)
+        # self.params.extend(self.logLayer.params)
 
-        self.finetune_cost = self.logLayer.negative_log_likelihood(self.y)
+        # self.finetune_cost = self.logLayer.negative_log_likelihood(self.y)
 
-        self.errors = self.logLayer.errors(self.y)
+        # self.errors = self.logLayer.errors(self.y)
+        #
+
+        C = T.matrix('C')
+        self.kmeansLayer = KMeans()
+        # because we use the output of last hidden layer
+        # as the input of kmeans, they share params
+        self.params.extend(self.sigmoid_layers[-1].params)
+        self.finetune_cost = self.kmeansLayer.cost()
+        self.errors = self.kmeansLayer.cost()
 
     def pretraining_functions(self, train_set_x, batch_size, k):
         # index to a [mini]batch
@@ -216,7 +226,7 @@ def test_DBN(finetune_lr=0.1, pretraining_epochs=100,
 
     print '... pre-training the model'
     start_time = time.clock()
-    ## Pre-train layer-wise
+    # Pre-train layer-wise
     for i in xrange(dbn.n_layers):
         # go through pretraining epochs
         for epoch in xrange(pretraining_epochs):
@@ -289,7 +299,7 @@ def test_DBN(finetune_lr=0.1, pretraining_epochs=100,
                 # if we got the best validation score until now
                 if this_validation_loss < best_validation_loss:
 
-                    #improve patience if loss improvement is good enough
+                    # improve patience if loss improvement is good enough
                     if (
                         this_validation_loss < best_validation_loss *
                         improvement_threshold
@@ -327,4 +337,4 @@ def test_DBN(finetune_lr=0.1, pretraining_epochs=100,
 
 
 if __name__ == '__main__':
-    test_DBN()
+    test_DBN(training_epochs=1)
