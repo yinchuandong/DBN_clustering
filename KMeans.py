@@ -111,7 +111,9 @@ if __name__ == '__main__':
     km = KMeans(X, C)
     centerMat, labelMat = km.bisCluster(dataMat, 3)
 
-    
+    # print centerMat
+    # print labelMat
+    # sys.exit()
 
     label = np.asarray(labelMat[:, 0].astype(int).T)[0]
     CMat = theano.shared(np.asarray(centerMat[label], dtype=theano.config.floatX
@@ -134,6 +136,7 @@ if __name__ == '__main__':
     C = centerMat[label][0:4]
     r2 = X - C
     print r2
+    print np.sqrt(np.sum(np.power(r2, 2)))
     cont = 0
     for i in range(1000):
         r = np.sqrt(np.sum(np.power(r2, 2)))
