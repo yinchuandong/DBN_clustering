@@ -1,4 +1,5 @@
 .idea
 .ropeproject
-*.pkl.gz
 *.pyc
+*.pkl*
+cae/data
