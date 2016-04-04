@@ -136,15 +136,15 @@ if __name__ == '__main__':
     noisy_circles = datasets.make_circles(n_samples=2000, factor=.5,
                                           noise=.05)
     DATA = noisy_circles[0]
-    DATA = loadDataSet('testSet2.txt')
-    DATA = np.mat(DATA)
+    # DATA = loadDataSet('testSet2.txt')
+    # DATA = np.mat(DATA)
     print np.shape(DATA)
 
     W3, D, S= klp_kmeans(DATA, 10, alpha = 0.001, epochs=100, batch=10, verbose=True, use_gpu=True)
-    # print W3
+    print W3
     print (W3**2).sum(0)#[:, None]
     print (W3**2).sum(0)[:, None]
-    # print D
+    print D
     print S
     sys.exit();
 
