@@ -7,8 +7,7 @@ from skimage import data
 from scipy.cluster import vq
 from scipy.misc import imresize
 import PCV
-from PCV.tools import ncut
-from PCV.tools import rof
+from PCV.tools import ncut, rof, pca
 
 
 def pKmeans(k=2):
@@ -65,10 +64,16 @@ def pKmeans2(filename, k=3):
             arr[i][row][col] = im[row][col]
 
     gray0 = cv2.cvtColor(arr[0], cv2.COLOR_BGR2GRAY)
+    # gray0 = cv2.medianBlur(gray0, 3)
+    # gray0 = cv2.GaussianBlur(gray0, (5, 5), 1.5)
     edge0 = cv2.Canny(gray0, 100, 200)
     gray1 = cv2.cvtColor(arr[1], cv2.COLOR_BGR2GRAY)
+    # gray1 = cv2.medianBlur(gray1, 3)
+    # gray1 = cv2.GaussianBlur(gray1, (5, 5), 1.5)
     edge1 = cv2.Canny(gray1, 100, 200)
     gray2 = cv2.cvtColor(arr[2], cv2.COLOR_BGR2GRAY)
+    # gray2 = cv2.medianBlur(gray2, 3)
+    # gray2 = cv2.GaussianBlur(gray2, (5, 5), 1.5)
     edge2 = cv2.Canny(gray2, 100, 200)
 
     sift = cv2.SIFT()
@@ -81,17 +86,17 @@ def pKmeans2(filename, k=3):
 
     # for splited image
     plt.figure(figsize=(10, 10))
-    plt.subplot(321), plt.axis('off')
+    plt.subplot(321), plt.axis('off'), plt.gray()
     plt.imshow(arr[0]), plt.title('cluster 0')
-    plt.subplot(322), plt.axis('off')
+    plt.subplot(322), plt.axis('off'), plt.gray()
     plt.imshow(edge0), plt.title('edge 0')
-    plt.subplot(323), plt.axis('off')
+    plt.subplot(323), plt.axis('off'), plt.gray()
     plt.imshow(arr[1]), plt.title('cluster 1')
-    plt.subplot(324), plt.axis('off')
+    plt.subplot(324), plt.axis('off'), plt.gray()
     plt.imshow(edge1), plt.title('edge 1')
-    plt.subplot(325), plt.axis('off')
+    plt.subplot(325), plt.axis('off'), plt.gray()
     plt.imshow(arr[2]), plt.title('cluster 2')
-    plt.subplot(326), plt.axis('off')
+    plt.subplot(326), plt.axis('off'), plt.gray()
     plt.imshow(edge2), plt.title('edge 2')
     plt.show()
 
@@ -104,4 +109,4 @@ def pKmeans2(filename, k=3):
 
 if __name__ == '__main__':
     # pKmeans()
-    pKmeans2('../img/3.png')
+    pKmeans2('../img/1.png')
