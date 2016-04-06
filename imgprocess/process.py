@@ -36,11 +36,11 @@ def testCV():
 
 
 def testCanny():
-    img = Image.open('../img/3.png')
+    img = Image.open('../img/4.png')
     img = np.array(img)
     imggray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     (thresh, imgbw) = cv2.threshold(imggray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
-    edges = cv2.Canny(imgbw, 100, 200)
+    edges = cv2.Canny(imggray, 100, 200)
     plt.subplot(221), plt.imshow(img, cmap='gray')
     plt.title('Original Image'), plt.axis('off')
     plt.subplot(222), plt.imshow(imggray, cmap='gray')
@@ -118,9 +118,10 @@ def testSkimage2():
 
 
 def testSIFT():
-    img = Image.open('../img/4.png')
+    img = Image.open('../img/3.png')
     img = np.array(img)
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    imggray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    (thresh, imgbw) = cv2.threshold(imggray, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
     sift = cv2.SIFT()
     kp, des = sift.detectAndCompute(img, None)
     img = cv2.drawKeypoints(img, kp)
@@ -135,8 +136,8 @@ if __name__ == '__main__':
     print 'start'
     # test()
     # testCV()
-    testCanny()
+    # testCanny()
     # testSkimage()
     # testSkimage2()
-    # testSIFT()
+    testSIFT()
     print 'end'

@@ -36,36 +36,72 @@ def pKmeans(k=2):
     return
 
 
-def pKmeans2():
-    im = Image.open('../img/3.png')
+def pKmeans2(filename, k=3):
+    im = Image.open(filename)
     im = np.array(im)
     im = cv2.cvtColor(im, cv2.COLOR_RGB2HSV)
     m, n = im.shape[0:2]
-    wid = 300
+    wid = 150
     rim = imresize(im, (wid, wid), interp='bilinear')
     rim = np.array(rim, 'f')
     rim = rim.reshape(-1, 3)
-    print rim.shape
+    # print rim.shape
 
     rim = vq.whiten(rim)
-    centroids, distortion = vq.kmeans(rim, 3)
+    centroids, distortion = vq.kmeans(rim, k)
     code, distance = vq.vq(rim, centroids)
-    # code = code.reshape(m, n)
     code = code.reshape(wid, wid)
     code = imresize(code, (m, n), interp='nearest')
-
+    labels = np.unique(code)
     im = cv2.cvtColor(im, cv2.COLOR_HSV2RGB)
-    plt.figure()
-    plt.subplot(211)
-    plt.imshow(code)
-    plt.gray()
-    plt.subplot(212)
-    plt.imshow(im)
-    plt.gray()
+
+    # split one image to k images according to cluster
+    arr = np.full((k, m, n, 3), 255, dtype=np.uint8)
+    for i in range(k):
+        pts = np.where(code[:][:] == labels[i])
+        for j in range(len(pts[0])):
+            row = pts[0][j]
+            col = pts[1][j]
+            arr[i][row][col] = im[row][col]
+
+    gray0 = cv2.cvtColor(arr[0], cv2.COLOR_BGR2GRAY)
+    edge0 = cv2.Canny(gray0, 100, 200)
+    gray1 = cv2.cvtColor(arr[1], cv2.COLOR_BGR2GRAY)
+    edge1 = cv2.Canny(gray1, 100, 200)
+    gray2 = cv2.cvtColor(arr[2], cv2.COLOR_BGR2GRAY)
+    edge2 = cv2.Canny(gray2, 100, 200)
+
+    sift = cv2.SIFT()
+    kp0, des0 = sift.detectAndCompute(gray0, None)
+    arr[0] = cv2.drawKeypoints(arr[0], kp0)
+    kp1, des1 = sift.detectAndCompute(gray1, None)
+    arr[1] = cv2.drawKeypoints(arr[1], kp1)
+    kp2, des2 = sift.detectAndCompute(gray2, None)
+    arr[2] = cv2.drawKeypoints(arr[2], kp2)
+
+    # for splited image
+    plt.figure(figsize=(10, 10))
+    plt.subplot(321), plt.axis('off')
+    plt.imshow(arr[0]), plt.title('cluster 0')
+    plt.subplot(322), plt.axis('off')
+    plt.imshow(edge0), plt.title('edge 0')
+    plt.subplot(323), plt.axis('off')
+    plt.imshow(arr[1]), plt.title('cluster 1')
+    plt.subplot(324), plt.axis('off')
+    plt.imshow(edge1), plt.title('edge 1')
+    plt.subplot(325), plt.axis('off')
+    plt.imshow(arr[2]), plt.title('cluster 2')
+    plt.subplot(326), plt.axis('off')
+    plt.imshow(edge2), plt.title('edge 2')
     plt.show()
 
+    # for original image
+    # plt.figure()
+    # plt.subplot(211), plt.imshow(code), plt.gray()
+    # plt.subplot(212), plt.imshow(im), plt.gray()
+    # plt.show()
     return
 
 if __name__ == '__main__':
     # pKmeans()
-    pKmeans2()
+    pKmeans2('../img/3.png')
