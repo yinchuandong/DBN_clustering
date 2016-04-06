@@ -84,6 +84,12 @@ def pKmeans2(filename, k=3):
     kp2, des2 = sift.detectAndCompute(gray2, None)
     arr[2] = cv2.drawKeypoints(arr[2], kp2)
 
+    print 'sift: ', len(kp0), len(kp1), len(kp2)
+    print 'edges: '
+    print len(np.where(edge0.flatten() == 255)[0])
+    print len(np.where(edge1.flatten() == 255)[0])
+    print len(np.where(edge2.flatten() == 255)[0])
+
     # for splited image
     plt.figure(figsize=(10, 10))
     plt.subplot(321), plt.axis('off'), plt.gray()
@@ -109,4 +115,4 @@ def pKmeans2(filename, k=3):
 
 if __name__ == '__main__':
     # pKmeans()
-    pKmeans2('../img/1.png')
+    pKmeans2('../img/2.png')
