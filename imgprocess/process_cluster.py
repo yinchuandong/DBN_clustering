@@ -63,15 +63,18 @@ def pKmeans2(filename, k=3):
             col = pts[1][j]
             arr[i][row][col] = im[row][col]
 
-    gray0 = cv2.cvtColor(arr[0], cv2.COLOR_BGR2GRAY)
+    gray0 = cv2.cvtColor(arr[0], cv2.COLOR_RGB2GRAY)
+    gray0 = sizeFilter(gray0)
     # gray0 = cv2.medianBlur(gray0, 3)
     # gray0 = cv2.GaussianBlur(gray0, (5, 5), 1.5)
     edge0 = cv2.Canny(gray0, 100, 200)
-    gray1 = cv2.cvtColor(arr[1], cv2.COLOR_BGR2GRAY)
+    gray1 = cv2.cvtColor(arr[1], cv2.COLOR_RGB2GRAY)
+    gray1 = sizeFilter(gray1)
     # gray1 = cv2.medianBlur(gray1, 3)
     # gray1 = cv2.GaussianBlur(gray1, (5, 5), 1.5)
     edge1 = cv2.Canny(gray1, 100, 200)
-    gray2 = cv2.cvtColor(arr[2], cv2.COLOR_BGR2GRAY)
+    gray2 = cv2.cvtColor(arr[2], cv2.COLOR_RGB2GRAY)
+    gray2 = sizeFilter(gray2)
     # gray2 = cv2.medianBlur(gray2, 3)
     # gray2 = cv2.GaussianBlur(gray2, (5, 5), 1.5)
     edge2 = cv2.Canny(gray2, 100, 200)
@@ -106,6 +109,7 @@ def pKmeans2(filename, k=3):
     plt.imshow(edge2), plt.title('edge 2')
     plt.show()
 
+    # Image.fromarray(gray0).save('gray0.png')
     # for original image
     # plt.figure()
     # plt.subplot(211), plt.imshow(code), plt.gray()
@@ -113,6 +117,56 @@ def pKmeans2(filename, k=3):
     # plt.show()
     return
 
+
+def sizeFilter(inarr, threshold=50):
+    outarr = inarr.copy()
+    m, n = inarr.shape
+    mark = np.zeros_like(inarr)
+    stack = []
+    for i in range(m):
+        for j in range(n):
+            if inarr[i, j] == 255 or mark[i, j] == 1:
+                continue
+            stack.append((i, j, inarr[i, j]))
+            area = []
+            area.append((i, j))
+            while stack:
+                pt = stack.pop()
+                mark[pt[0], pt[1]] = 1
+                if len(area) > threshold:
+                    stack = []
+                    area = []
+                    break
+                # print pt
+                startY = 0 if pt[0] - 1 < 0 else pt[0] - 1
+                startX = 0 if pt[1] - 1 < 0 else pt[1] - 1
+                endY = m - 1 if pt[0] + 1 > m - 1 else pt[0] + 1
+                endX = n - 1 if pt[1] + 1 > n - 1 else pt[1] + 1
+                for ti in range(startY, endY + 1):
+                    for tj in range(startX, endX + 1):
+                        if inarr[ti, tj] == 255 or mark[ti, tj] == 1:
+                            continue
+                        stack.append((ti, tj, inarr[ti, tj]))
+                        area.append((ti, tj))
+                        mark[ti, tj] = 1
+            if len(area) == 0:
+                continue
+            for t in area:
+                outarr[t] = 255
+            # print 'len: ', len(area)
+            # break
+        # break
+    # plt.figure()
+    # plt.subplot(211), plt.imshow(inarr), plt.gray()
+    # plt.subplot(212), plt.imshow(outarr), plt.gray()
+    # plt.show()
+    return outarr
+
 if __name__ == '__main__':
     # pKmeans()
     pKmeans2('../img/2.png')
+    # img = np.array(Image.open('gray0.png'))
+    # sizeFilter(img, threshold=50)
+    
+
+

@@ -139,5 +139,5 @@ if __name__ == '__main__':
     # testCanny()
     # testSkimage()
     # testSkimage2()
-    testSIFT()
+    # testSIFT()
     print 'end'
